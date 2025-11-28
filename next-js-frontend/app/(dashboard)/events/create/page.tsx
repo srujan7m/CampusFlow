@@ -60,11 +60,15 @@ export default function CreateEventPage() {
         userId: user.id,
       }
 
+      console.log("Submitting event data:", eventData)
+
       const event = await createEvent.mutateAsync(eventData)
+      console.log("Event created successfully:", event)
       toast.success("Event created successfully!")
       router.push(`/events/${event.code}/manage`)
-    } catch (error) {
-      toast.error("Failed to create event")
+    } catch (error: any) {
+      console.error("Failed to create event:", error)
+      toast.error(error.message || "Failed to create event")
     }
   }
 

@@ -1,0 +1,10 @@
+{
+    "name": "Test Event",
+    "description": "This is a test event to verify the database fix",
+    "address": "Test Venue, Test City",
+    "lat": 28.6139,
+    "lng": 77.2090,
+    "date": "2025-12-01T10:00:00",
+    "ticketPrice": 100,
+    "userId": "test-user-123"
+}

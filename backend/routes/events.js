@@ -20,6 +20,7 @@ router.get('/', async (req, res) => {
             events.push({ id: doc.id, ...doc.data() });
         });
 
+        console.log(`Fetched ${events.length} events`);
         res.json({ events });
     } catch (error) {
         console.error('Error fetching events:', error);
@@ -51,33 +52,84 @@ router.get('/:id', async (req, res) => {
  */
 router.post('/', async (req, res) => {
     try {
+        console.log('Received create event request:', req.body);
         const db = admin.firestore();
-        const { name, description, location, date, ticketPrice, organizerId, organizerTelegramChatId } = req.body;
+        // Accept both userId and organizerId for backwards compatibility
+        const {
+            name,
+            description,
+            location,
+            address,
+            lat,
+            lng,
+            date,
+            ticketPrice,
+            organizerId,
+            userId,
+            organizerTelegramChatId,
+            telegramChatId,
+            formSchema
+        } = req.body;
+
+        // Use userId if provided, otherwise fall back to organizerId
+        const actualOrganizerId = userId || organizerId;
+
+        // Validate required fields
+        if (!actualOrganizerId) {
+            console.error('Missing userId or organizerId');
+            return res.status(400).json({
+                error: 'Missing required field: userId or organizerId'
+            });
+        }
+
+        // Validate date
+        const eventDate = new Date(date);
+        if (isNaN(eventDate.getTime())) {
+            console.error('Invalid date:', date);
+            return res.status(400).json({ error: 'Invalid date format' });
+        }
 
         // Generate unique event code
         const eventCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+        // Build location object according to Firestore schema
+        // Schema expects: location: { lat: number, lng: number, address: string }
+        let locationData;
+        if (location && typeof location === 'object') {
+            // If location is already an object, use it
+            locationData = location;
+        } else {
+            // Build location object from separate fields
+            locationData = {
+                address: address || location || '',
+                lat: lat || 0,
+                lng: lng || 0
+            };
+        }
 
         const eventData = {
             name,
             description,
             eventCode,
-            organizerId,
-            organizerTelegramChatId: organizerTelegramChatId || null,
-            location,
-            date: admin.firestore.Timestamp.fromDate(new Date(date)),
+            organizerId: actualOrganizerId,
+            organizerTelegramChatId: telegramChatId || organizerTelegramChatId || null,
+            location: locationData,
+            date: admin.firestore.Timestamp.fromDate(eventDate),
             ticketPrice: ticketPrice || 0,
             indoorMapUrl: null,
             indoorMapPOIs: [],
+            formSchema: formSchema || [],
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             updatedAt: admin.firestore.FieldValue.serverTimestamp()
         };
 
         const docRef = await db.collection(COLLECTIONS.EVENTS).add(eventData);
 
-        res.status(201).json({ id: docRef.id, ...eventData });
+        res.status(201).json({ id: docRef.id, code: eventCode, ...eventData });
     } catch (error) {
         console.error('Error creating event:', error);
-        res.status(500).json({ error: 'Failed to create event' });
+        console.error('Request body:', req.body);
+        res.status(500).json({ error: 'Failed to create event', details: error.message });
     }
 });
 
@@ -87,7 +139,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         const db = admin.firestore();
-        const { name, description, location, date, ticketPrice, organizerTelegramChatId } = req.body;
+        const { name, description, location, date, ticketPrice, organizerTelegramChatId, formSchema } = req.body;
 
         const updateData = {
             ...(name && { name }),
@@ -96,6 +148,7 @@ router.put('/:id', async (req, res) => {
             ...(date && { date: admin.firestore.Timestamp.fromDate(new Date(date)) }),
             ...(ticketPrice !== undefined && { ticketPrice }),
             ...(organizerTelegramChatId !== undefined && { organizerTelegramChatId }),
+            ...(formSchema && { formSchema }),
             updatedAt: admin.firestore.FieldValue.serverTimestamp()
         };
 

@@ -11,12 +11,16 @@ const router = express.Router();
 router.get('/', async (req, res) => {
     try {
         const db = admin.firestore();
-        const { eventId } = req.query;
+        const { eventId, userId } = req.query;
 
         let query = db.collection(COLLECTIONS.REGISTRATIONS);
 
         if (eventId) {
             query = query.where('eventId', '==', eventId);
+        }
+
+        if (userId) {
+            query = query.where('userId', '==', userId);
         }
 
         const snapshot = await query.get();
@@ -39,7 +43,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
     try {
         const db = admin.firestore();
-        const { eventId, name, email, userId } = req.body;
+        const { eventId, name, email, userId, answers } = req.body;
 
         // Get event
         const eventDoc = await db.collection(COLLECTIONS.EVENTS).doc(eventId).get();
@@ -56,6 +60,10 @@ router.post('/', async (req, res) => {
             userId: userId || '',
             name,
             email,
+            answers: answers || {},
+            eventName: event.name || '',
+            eventDate: event.date || null,
+            eventLocation: event.location || null,
             paymentStatus: PAYMENT_STATUS.PENDING,
             amount,
             registeredAt: admin.firestore.FieldValue.serverTimestamp()

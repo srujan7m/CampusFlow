@@ -1,0 +1,14 @@
+{
+  "/(auth)/login/page": "/login",
+  "/(auth)/signup/page": "/signup",
+  "/(dashboard)/dashboard/page": "/dashboard",
+  "/(dashboard)/events/[code]/manage/page": "/events/[code]/manage",
+  "/(dashboard)/events/create/page": "/events/create",
+  "/(dashboard)/events/page": "/events",
+  "/(dashboard)/profile/page": "/profile",
+  "/(dashboard)/settings/page": "/settings",
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/events/[code]/page": "/events/[code]",
+  "/page": "/"
+}

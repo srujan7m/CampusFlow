@@ -1,0 +1,13 @@
+var R=require("../../chunks/ssr/[turbopack]_runtime.js")("server/app/_not-found/page.js")
+R.c("server/chunks/ssr/OneDrive_Desktop_Collage Events_next-js-frontend_5737c37c._.js")
+R.c("server/chunks/ssr/[root-of-the-server]__5f0ab400._.js")
+R.c("server/chunks/ssr/1a639_next_dist_esm_build_templates_app-page_f757a60b.js")
+R.c("server/chunks/ssr/[root-of-the-server]__cc6e640d._.js")
+R.c("server/chunks/ssr/[root-of-the-server]__f965da7a._.js")
+R.c("server/chunks/ssr/[root-of-the-server]__449db910._.js")
+R.c("server/chunks/ssr/[root-of-the-server]__6f05e4dd._.js")
+R.c("server/chunks/ssr/1a639_next_dist_client_components_d84f862a._.js")
+R.c("server/chunks/ssr/1a639_next_dist_client_components_builtin_forbidden_33d9fdff.js")
+R.c("server/chunks/ssr/83930_next-js-frontend__next-internal_server_app__not-found_page_actions_1c62df8b.js")
+R.m(58139)
+module.exports=R.m(58139).exports

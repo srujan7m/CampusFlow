@@ -1,0 +1,7 @@
+1:"$Sreact.fragment"
+2:I[24090,["/_next/static/chunks/7421b352dfe20580.js","/_next/static/chunks/ce1aca044315fe6e.js","/_next/static/chunks/a020176e52a7a724.js","/_next/static/chunks/4b7cf6d7a76ca742.js","/_next/static/chunks/d158ca6c1e39f92c.js","/_next/static/chunks/5f73c74ac1e9683e.js"],"AuthLayout"]
+3:I[30526,["/_next/static/chunks/7421b352dfe20580.js","/_next/static/chunks/ce1aca044315fe6e.js","/_next/static/chunks/a020176e52a7a724.js","/_next/static/chunks/4b7cf6d7a76ca742.js","/_next/static/chunks/d158ca6c1e39f92c.js","/_next/static/chunks/5f73c74ac1e9683e.js"],"SignupForm"]
+4:I[41349,["/_next/static/chunks/b99ac50f860c7d75.js","/_next/static/chunks/06ed9da9c1d8c8d0.js"],"OutletBoundary"]
+5:"$Sreact.suspense"
+0:{"buildId":"ibdaZjysEdd0SszSNY5Rw","rsc":["$","$1","c",{"children":[["$","$L2",null,{"title":"Create an account","description":"Get started with Althu Faltu today","children":["$","$L3",null,{}]}],[["$","script","script-0",{"src":"/_next/static/chunks/a020176e52a7a724.js","async":true}],["$","script","script-1",{"src":"/_next/static/chunks/4b7cf6d7a76ca742.js","async":true}],["$","script","script-2",{"src":"/_next/static/chunks/d158ca6c1e39f92c.js","async":true}],["$","script","script-3",{"src":"/_next/static/chunks/5f73c74ac1e9683e.js","async":true}]],["$","$L4",null,{"children":["$","$5",null,{"name":"Next.MetadataOutlet","children":"$@6"}]}]]}],"loading":null,"isPartial":false}
+6:null

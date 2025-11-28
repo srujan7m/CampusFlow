@@ -33,6 +33,9 @@ export const eventsApi = {
 
   // Create new event
   createEvent: async (eventData: CreateEventData): Promise<Event> => {
+    console.log("API: Creating event with data:", eventData)
+    console.log("API: URL:", `${API_URL}/events`)
+
     const response = await fetch(`${API_URL}/events`, {
       method: "POST",
       headers: {
@@ -40,11 +43,15 @@ export const eventsApi = {
       },
       body: JSON.stringify(eventData),
     });
+
     if (!response.ok) {
       const error = await response.json();
+      console.error("API: Create event failed:", error)
       throw new Error(error.message || "Failed to create event");
     }
+
     const data = await response.json();
+    console.log("API: Create event success:", data)
     return data.event || data;
   },
 
