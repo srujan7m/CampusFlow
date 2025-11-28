@@ -17,7 +17,7 @@ export function useRegistrations(eventCode: string) {
   return useQuery({
     queryKey: registrationKeys.list(eventCode),
     queryFn: () => registrationsApi.getRegistrations(eventCode),
-    enabled: !!eventCode,
+    enabled: !!eventCode && eventCode !== "undefined",
   });
 }
 

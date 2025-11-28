@@ -8,16 +8,44 @@ const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
 /**
+ * Helper to convert Firestore timestamps to ISO strings
+ */
+const convertEventDates = (data) => {
+    const event = { ...data };
+    if (event.date && typeof event.date.toDate === 'function') {
+        event.date = event.date.toDate().toISOString();
+    }
+    if (event.createdAt && typeof event.createdAt.toDate === 'function') {
+        event.createdAt = event.createdAt.toDate().toISOString();
+    }
+    if (event.updatedAt && typeof event.updatedAt.toDate === 'function') {
+        event.updatedAt = event.updatedAt.toDate().toISOString();
+    }
+    // Map eventCode to code for frontend compatibility
+    if (event.eventCode) {
+        event.code = event.eventCode;
+    }
+    return event;
+};
+
+/**
  * GET /api/events - List all events
  */
 router.get('/', async (req, res) => {
     try {
         const db = admin.firestore();
-        const snapshot = await db.collection(COLLECTIONS.EVENTS).get();
+        let query = db.collection(COLLECTIONS.EVENTS);
+
+        // Filter by userId if provided
+        if (req.query.userId) {
+            query = query.where('organizerId', '==', req.query.userId);
+        }
+
+        const snapshot = await query.get();
 
         const events = [];
         snapshot.forEach(doc => {
-            events.push({ id: doc.id, ...doc.data() });
+            events.push(convertEventDates({ id: doc.id, ...doc.data() }));
         });
 
         console.log(`Fetched ${events.length} events`);
@@ -34,13 +62,23 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const db = admin.firestore();
-        const doc = await db.collection(COLLECTIONS.EVENTS).doc(req.params.id).get();
+        let doc = await db.collection(COLLECTIONS.EVENTS).doc(req.params.id).get();
 
         if (!doc.exists) {
-            return res.status(404).json({ error: 'Event not found' });
+            // Try finding by eventCode
+            const snapshot = await db.collection(COLLECTIONS.EVENTS)
+                .where('eventCode', '==', req.params.id)
+                .limit(1)
+                .get();
+
+            if (snapshot.empty) {
+                return res.status(404).json({ error: 'Event not found' });
+            }
+
+            doc = snapshot.docs[0];
         }
 
-        res.json({ id: doc.id, ...doc.data() });
+        res.json(convertEventDates({ id: doc.id, ...doc.data() }));
     } catch (error) {
         console.error('Error fetching event:', error);
         res.status(500).json({ error: 'Failed to fetch event' });

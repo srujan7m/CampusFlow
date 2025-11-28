@@ -16,7 +16,7 @@ export function useTickets(eventCode: string) {
   return useQuery({
     queryKey: ticketKeys.list(eventCode),
     queryFn: () => ticketsApi.getTickets(eventCode),
-    enabled: !!eventCode,
+    enabled: !!eventCode && eventCode !== "undefined",
   });
 }
 

@@ -26,7 +26,7 @@ export function useEvent(idOrCode: string) {
   return useQuery({
     queryKey: eventKeys.detail(idOrCode),
     queryFn: () => eventsApi.getEvent(idOrCode),
-    enabled: !!idOrCode,
+    enabled: !!idOrCode && idOrCode !== "undefined",
   });
 }
 

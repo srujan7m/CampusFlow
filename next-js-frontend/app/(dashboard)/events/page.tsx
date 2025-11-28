@@ -56,14 +56,22 @@ function EventCard({ event }: { event: Event }) {
         <div className="space-y-2 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
-            <span>{format(eventDate, "PPP 'at' p")}</span>
+            <span>
+              {(() => {
+                try {
+                  return format(eventDate, "PPP 'at' p")
+                } catch (e) {
+                  return "Invalid Date"
+                }
+              })()}
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <MapPin className="h-4 w-4" />
             <span className="line-clamp-1">{event.address}</span>
           </div>
         </div>
-        
+
         <div className="flex items-center justify-between pt-2 border-t">
           <span className="text-lg font-semibold">
             ₹{event.ticketPrice}

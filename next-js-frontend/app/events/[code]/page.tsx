@@ -246,7 +246,15 @@ export default function EventPublicPage() {
             <div className="flex flex-wrap items-center gap-6 text-sm">
               <div className="flex items-center gap-2">
                 <Calendar className="h-5 w-5 text-primary" />
-                <span>{format(eventDate, "EEEE, MMMM d, yyyy 'at' h:mm a")}</span>
+                <span>
+                  {(() => {
+                    try {
+                      return format(new Date(event.date), "EEEE, MMMM d, yyyy 'at' h:mm a")
+                    } catch (e) {
+                      return "Date not available"
+                    }
+                  })()}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-primary" />

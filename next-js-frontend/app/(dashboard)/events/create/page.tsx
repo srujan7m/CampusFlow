@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { ArrowLeft, Calendar, MapPin, DollarSign, MessageSquare, Loader2 } from "lucide-react"
+import { ArrowLeft, Calendar, MapPin, DollarSign, MessageSquare, Loader2, FileText } from "lucide-react"
 import { DashboardLayout } from "@/components/layouts/dashboard-layout"
 import { PageHeader } from "@/components/core/page-header"
 import { Button } from "@/components/ui/button"
@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { useCreateEvent } from "@/hooks/use-events"
+import { useCreateEvent, useUploadDocument } from "@/hooks/use-events"
 import { useAuthStore } from "@/lib/store/auth-store"
 import { toast } from "sonner"
 import type { EventFormData } from "@/types/event"
@@ -20,6 +20,9 @@ export default function CreateEventPage() {
   const router = useRouter()
   const { user } = useAuthStore()
   const createEvent = useCreateEvent()
+  const uploadDocument = useUploadDocument()
+
+  const [file, setFile] = useState<File | null>(null)
 
   const [formData, setFormData] = useState<EventFormData>({
     name: "",
@@ -64,6 +67,28 @@ export default function CreateEventPage() {
 
       const event = await createEvent.mutateAsync(eventData)
       console.log("Event created successfully:", event)
+
+      if (file) {
+        try {
+          toast.info("Uploading document...")
+          await uploadDocument.mutateAsync({
+            eventCode: event.id, // The backend returns the doc ID as 'id', but we need the event ID for the path. Wait, let's check the backend response.
+            // Backend: res.status(201).json({ id: docRef.id, code: eventCode, ...eventData });
+            // So event.id is the Firestore ID.
+            // The upload endpoint is: router.post('/:id/documents', ...
+            // So we should use event.id.
+            // BUT, the api/events.ts says: uploadDocument: async (eventCode: string, file: File) => ... fetch(`${API_URL}/events/${eventCode}/documents`
+            // So the 'eventCode' param in the API function actually maps to the URL param which is handled as ':id' in the backend route (router.post('/:id/documents'...).
+            // So we should pass the event ID.
+            file
+          })
+          toast.success("Document uploaded successfully!")
+        } catch (uploadError) {
+          console.error("Failed to upload document:", uploadError)
+          toast.error("Event created, but document upload failed.")
+        }
+      }
+
       toast.success("Event created successfully!")
       router.push(`/events/${event.code}/manage`)
     } catch (error: any) {
@@ -227,6 +252,30 @@ export default function CreateEventPage() {
                     />
                     <p className="text-xs text-muted-foreground">
                       Connect your event to a Telegram group for support queries and polls
+                    </p>
+                  </div>
+                </div>
+
+                {/* Document Upload */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <FileText className="h-4 w-4" />
+                    Event Documentation (Optional)
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="document">Upload Event Info (Word/PDF)</Label>
+                    <Input
+                      id="document"
+                      type="file"
+                      accept=".docx,.pdf,.txt"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) setFile(file)
+                      }}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Upload a document with event details. Our AI will read this to answer attendee questions automatically.
                     </p>
                   </div>
                 </div>

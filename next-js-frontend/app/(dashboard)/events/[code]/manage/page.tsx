@@ -234,7 +234,13 @@ export default function EventManagePage() {
                         Date
                       </Label>
                       <p className="text-sm font-medium">
-                        {format(new Date(event.date), "PPP 'at' p")}
+                        {(() => {
+                          try {
+                            return format(new Date(event.date), "PPP 'at' p")
+                          } catch (e) {
+                            return "Invalid Date"
+                          }
+                        })()}
                       </p>
                     </div>
                     <div className="space-y-2">
@@ -424,8 +430,8 @@ export default function EventManagePage() {
                                 ticket.status === "answered"
                                   ? "default"
                                   : ticket.status === "flagged"
-                                  ? "destructive"
-                                  : "secondary"
+                                    ? "destructive"
+                                    : "secondary"
                               }
                             >
                               {ticket.status}
@@ -529,16 +535,21 @@ export default function EventManagePage() {
                                   reg.paymentStatus === "completed"
                                     ? "default"
                                     : reg.paymentStatus === "pending"
-                                    ? "secondary"
-                                    : "destructive"
+                                      ? "secondary"
+                                      : "destructive"
                                 }
                               >
                                 {reg.paymentStatus}
                               </Badge>
                             </TableCell>
                             <TableCell>
-                              {reg.createdAt &&
-                                format(new Date(reg.createdAt), "PP")}
+                              {(() => {
+                                try {
+                                  return reg.createdAt ? format(new Date(reg.createdAt), "PP") : "N/A"
+                                } catch (e) {
+                                  return "Invalid Date"
+                                }
+                              })()}
                             </TableCell>
                           </TableRow>
                         ))}
